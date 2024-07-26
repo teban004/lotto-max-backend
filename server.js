@@ -20,6 +20,12 @@ const pool = new Pool({
 app.use(cors());
 app.use(express.json());
 
+// Basic route to ensure server is running
+app.get('/', (req, res) => {
+  res.send('API is running');
+});
+
+// Endpoint to fetch winning numbers
 app.get('/api/winning-numbers', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM lotto_max_results ORDER BY draw_date DESC LIMIT 10');
@@ -30,6 +36,7 @@ app.get('/api/winning-numbers', async (req, res) => {
   }
 });
 
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
