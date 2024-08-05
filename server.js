@@ -73,7 +73,7 @@ app.get('/api/stats', async (req, res) => {
             FROM
                 lotto_counts
             ORDER BY
-                number;
+                count desc, last_draw_date asc, number;
         `;
     
         // Execute the query
