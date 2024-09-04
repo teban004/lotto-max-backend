@@ -62,18 +62,37 @@ app.get('/api/stats', async (req, res) => {
                 LEFT JOIN
                     lotto_max_results
                 ON
-                    number IN (number1, number2, number3, number4, number5, number6, number7, bonus_number) -- adjust to match your column names
+                    number IN (number1, number2, number3, number4, number5, number6, number7, bonus_number)
                 GROUP BY
                     number
+            ),
+            eligible_draws AS (
+                SELECT
+                    number,
+                    CASE
+                        WHEN number = 50 THEN 
+                            (SELECT COUNT(*) FROM lotto_max_results WHERE draw_date > '2019-05-14')
+                        ELSE
+                            (SELECT COUNT(*) FROM lotto_max_results)
+                    END AS eligible_draws_count
+                FROM
+                    number_series
             )
             SELECT
-                number,
-                COALESCE(count, 0) AS count,
-                last_draw_date
+                lotto_counts.number,
+                COALESCE(lotto_counts.count, 0) AS count,
+                lotto_counts.last_draw_date,
+                CURRENT_DATE - lotto_counts.last_draw_date as days_from_being_winner,
+                COALESCE(lotto_counts.count, 0)::float/eligible_draws.eligible_draws_count as freq,
+                COALESCE(lotto_counts.count, 0)*(CURRENT_DATE - lotto_counts.last_draw_date)::float/eligible_draws.eligible_draws_count as hot_number
             FROM
                 lotto_counts
+            JOIN
+                eligible_draws
+            ON
+                lotto_counts.number = eligible_draws.number
             ORDER BY
-                count desc, last_draw_date asc, number;
+                hot_number desc, freq desc, count desc, last_draw_date;
         `;
     
         // Execute the query
