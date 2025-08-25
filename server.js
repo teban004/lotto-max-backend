@@ -5,10 +5,10 @@ const { Pool } = require('pg');
 const cors = require('cors');
 require('dotenv').config(); // Load environment variables from .env file
 const bodyParser = require('body-parser');
-const https = require('https');
+const http = require('http');
 const fs = require('fs');
 
-const app = express();
+const app = express('./app');
 const port = process.env.PORT || 5000; // Use PORT environment variable if available
 
 // Load SSL certificates from environment variables
@@ -168,15 +168,15 @@ app.get('/api/stats/:number', async (req, res) => {
     }
 });
 
-// Start the HTTPS server
-const httpsServer = https.createServer(credentials, app);
+// Start the HTTP server
+const httpServer = http.createServer(credentials, app);
 
-httpsServer.listen(port, () => {
-    console.log(`HTTPS Server running on port ${port}`);
+httpServer.listen(port, () => {
+    console.log(`HTTP Server running on port ${port}`);
 });
 
-// Error handling for HTTPS server
-httpsServer.on('error', (err) => {
-    console.error('Failed to start HTTPS server:', err);
+// Error handling for HTTP server
+httpServer.on('error', (err) => {
+    console.error('Failed to start HTTP server:', err);
     process.exit(1);
 });
