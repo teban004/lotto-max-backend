@@ -6,21 +6,9 @@ const cors = require('cors');
 require('dotenv').config(); // Load environment variables from .env file
 const bodyParser = require('body-parser');
 const http = require('http');
-const fs = require('fs');
 
 const app = express('./app');
 const port = process.env.PORT || 5000; // Use PORT environment variable if available
-
-// Load SSL certificates from environment variables
-const privateKey = fs.readFileSync(process.env.SSL_KEY_PATH, 'utf8');
-const certificate = fs.readFileSync(process.env.SSL_CERT_PATH, 'utf8');
-const ca = fs.readFileSync(process.env.SSL_CA_PATH, 'utf8');
-
-const credentials = {
-    key: privateKey,
-    cert: certificate,
-    ca: ca
-};
 
 // Use environment variables for database connection
 const pool = new Pool({
@@ -169,7 +157,7 @@ app.get('/api/stats/:number', async (req, res) => {
 });
 
 // Start the HTTP server
-const httpServer = http.createServer(credentials, app);
+const httpServer = http.createServer(app);
 
 httpServer.listen(port, () => {
     console.log(`HTTP Server running on port ${port}`);
