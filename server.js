@@ -33,7 +33,6 @@ const pool = new Pool({
 
 // Middleware
 app.use(cors());
-// app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -137,7 +136,12 @@ app.get('/api/stats/:number', async (req, res) => {
     if (isNaN(number) || !Number.isInteger(parseFloat(number))) {
         return res.status(400).json({ error: 'Invalid number provided' });
     }
-  
+
+    // Input validation: Ensure 'number' is within the valid range (1-50)
+    if (parseInt(number) < 1 || parseInt(number) > 50) {
+        return res.status(400).json({ error: 'Number must be between 1 and 50' });
+    }
+
     try {
         // Parameterized query to prevent SQL injection
         const query = `
